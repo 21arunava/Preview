@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<body id="a1">
+
+<video id="myVideo"  width="576px" height="324px" top="0px" left="0px" controls margin-top="0px"
+    margin-bottom= "0px" margin-right= "0px" margin-left= "0px">
+  <source src="http://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4" id="v1">
+</video>
+
+
+<div id="overlay" top="0px" left="0px" controls margin-top="0px"
+    margin-bottom= "0px" margin-right= "0px" margin-left= "0px">
+</div>
+
+<p>Playback position: 	<span id="demo"></span></p>
+<p>Height of the Video: <span id="demo1"></span></p>
+<p>Width of the Video: 	<span id="demo2"></span><p>
+
+<style>
+  #overlay 
+  {
+    position: absolute;
+    opacity: 1;
+    z-index: 3;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+  }
+  #v1 
+  {
+    z-index: 2;
+  }
+  #a1
+  {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+  }
+  }
+  
+</style>
+
+<script>
+
+var flag=1;
+
+var json=[{"graphicsource":"output.gif","offset":5,"duration":5,"x":0,"y":0,"display":"false"},{"graphicsource":"23.png","offset":17,"duration":5,"x":1682,"y":82,"display":"false"},{"graphicsource":"24.png","offset":25,"duration":5,"x":1682,"y":82,"display":"false"}]
+
+var count = Object.keys(json).length;
+console.log(count);
+
+var arr=[]
+var arr1=[]
+var arr2=[]
+for (var key1 in json)
+{
+  var val1= json[key1];
+  arr.push(val1.offset);
+  arr1.push(val1.duration);
+  arr2.push(val1.offset + val1.duration);
+}
+
+var last = arr2[arr2.length - 1];
+console.log(last);
+console.log( typeof last);
+
+var vid = document.getElementById("v1");
+var v12 = document.getElementById("myVideo");
+
+v12.addEventListener('loadedmetadata', function() 
+{v12.currentTime = (arr[0] - 1 );}, false);
+
+//arr.shift();
+//console.log(arr[0]);
+
+v12.ontimeupdate = function() {imageoverlay(vid,v12)};
+
+function imageoverlay(vid,v12) 
+{
+
+for (var key1 in json) 
+{
+    var key = key1;
+    console.log(key);
+    if (json.hasOwnProperty(key)) 
+    {
+      var val = json[key];
+      var starttime=val.offset;
+      var endtime=val.offset+val.duration;
+      document.getElementById("demo").innerHTML =  v12.currentTime;    
+      if (v12.currentTime >= starttime && v12.currentTime <= endtime && val.display=="false")
+      {
+
+        var elem = document.createElement("img");
+        elem.setAttribute("src", val.graphicsource);
+        if(flag ==1)
+        {  
+        elem.setAttribute("height", "10%");
+        elem.setAttribute("width",  "10%");
+        }
+        else
+        {
+          elem.setAttribute("height", "30%");
+          elem.setAttribute("width",  "30%");
+        }  
+        flag=0;
+        var d = document.getElementById('overlay'); 
+        d.appendChild(elem);
+        d.style.position = "absolute";
+        d.style.display  = "block";
+        d.style.left = 0.3 * val.x +'px';
+        d.style.top  = 0.3 * val.y +'px';
+        val.display="true";
+
+        setTimeout(function a() { d.removeChild(elem);d.style.display = "none";val.display="false"; arr.shift();v12.currentTime=(arr[0] - 1);  },(val.duration + 1) * 1000);
+        }
+       if (v12.currentTime >= last)
+       {
+          v12.pause();
+          break;
+       } 
+    document.getElementById("demo1").innerHTML = v12.videoHeight;
+    document.getElementById("demo2").innerHTML = v12.videoWidth;
+    }
+  }
+ }
+
+</script>
+</body>
+</html>
